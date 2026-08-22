@@ -1,0 +1,13 @@
+networkx
+pandas
+numpy
+scikit-learn
+qiskit
+qiskit-optimization
+streamlit
+plotly
+xgboost
+joblib
+
+[dev]
+pytest

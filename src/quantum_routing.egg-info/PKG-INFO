@@ -1,0 +1,59 @@
+Metadata-Version: 2.4
+Name: quantum_routing
+Version: 0.1.0
+Summary: AI + Quantum Network Traffic Routing and Congestion Control
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: networkx
+Requires-Dist: pandas
+Requires-Dist: numpy
+Requires-Dist: scikit-learn
+Requires-Dist: qiskit
+Requires-Dist: qiskit-optimization
+Requires-Dist: streamlit
+Requires-Dist: plotly
+Requires-Dist: xgboost
+Requires-Dist: joblib
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Dynamic: license-file
+
+# AI + Quantum Network Traffic Routing and Congestion Control
+
+This project implements a system for dynamically routing network traffic to avoid congestion using a combination of classical Machine Learning and Quantum Computing (QAOA).
+
+## Architecture
+
+The system pipeline consists of:
+1. **Network Simulation & Traffic Generation**: Simulating network topology and generating traffic scenarios (NetworkX).
+2. **ML Prediction & Congestion Detection**: Predicting future congestion states on nodes and edges (Scikit-learn).
+3. **Classical Routing**: Establishing baseline routes using classical algorithms (e.g., Dijkstra).
+4. **Quantum Routing (QUBO & QAOA)**: Formulating route optimization as a Quadratic Unconstrained Binary Optimization (QUBO) problem and solving it via Quantum Approximate Optimization Algorithm (QAOA) using Qiskit.
+5. **Benchmarking & Metrics**: Calculating and comparing throughput, delay, and congestion metrics dynamically from simulation results.
+6. **Dashboard**: An interactive Streamlit dashboard to visualize results, topologies, and benchmarks with Plotly.
+
+## Installation
+
+```bash
+pip install -e .
+# or
+pip install -r requirements.txt
+```
+
+## Running the Project
+
+To launch the dashboard:
+```bash
+streamlit run src/quantum_routing/app/dashboard.py
+```
+
+To run the main orchestration script:
+```bash
+python src/quantum_routing/main.py
+```
+
+To run the tests:
+```bash
+pytest tests/
+```

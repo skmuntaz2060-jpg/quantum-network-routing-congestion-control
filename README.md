@@ -1,0 +1,48 @@
+# AI + Quantum Network Traffic Routing and Congestion Control
+
+This project implements a system for dynamically routing network traffic to avoid congestion using a combination of classical Machine Learning and Quantum Computing (QAOA).
+
+## Architecture
+
+The system pipeline consists of:
+1. **Network Simulation & Traffic Generation**: Simulating network topology and generating traffic scenarios (NetworkX).
+2. **ML Prediction & Congestion Detection**: Predicting future congestion states on nodes and edges (Scikit-learn).
+3. **Classical Routing**: Establishing baseline routes using classical algorithms (e.g., Dijkstra).
+4. **Quantum Routing (QUBO & QAOA)**: Formulating route optimization as a Quadratic Unconstrained Binary Optimization (QUBO) problem and solving it via Quantum Approximate Optimization Algorithm (QAOA) using Qiskit.
+5. **Benchmarking & Metrics**: Calculating and comparing throughput, delay, and congestion metrics dynamically from simulation results.
+6. **Dashboard**: An interactive Streamlit dashboard to visualize results, topologies, and benchmarks with Plotly.
+
+## 🚀 Deployment Instructions (Linux Ready)
+
+To deploy the full suite (Backend + Streamlit Dashboard) on a clean Linux environment, follow these steps:
+
+### 1. Prerequisites
+Ensure you have `python3.9` or higher installed on your system.
+
+### 2. Set up a Virtual Environment
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### 3. Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Run the Backend Simulator
+Before launching the dashboard, ensure you have generated a baseline set of results:
+```bash
+python src/quantum_routing/main.py --routers 8 --steps 5
+```
+
+### 5. Launch the Streamlit Dashboard
+```bash
+python -m streamlit run src/quantum_routing/dashboard/app.py
+```
+The dashboard will be available at `http://localhost:8501`. Ensure port 8501 is exposed if you are deploying to a remote server.
+
+### 6. Run Tests
+```bash
+pytest tests/
+```

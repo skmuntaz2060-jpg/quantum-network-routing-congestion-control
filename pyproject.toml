@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quantum_routing"
+version = "0.1.0"
+description = "AI + Quantum Network Traffic Routing and Congestion Control"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "networkx",
+    "pandas",
+    "numpy",
+    "scikit-learn",
+    "qiskit",
+    "qiskit-optimization",
+    "streamlit",
+    "plotly",
+    "xgboost",
+    "joblib",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+]
