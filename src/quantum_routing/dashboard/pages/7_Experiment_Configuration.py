@@ -4,7 +4,7 @@ import os
 import subprocess
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-from utils import render_sidebar_info
+from quantum_routing.dashboard.utils import render_sidebar_info
 
 st.set_page_config(page_title="Experiment Configuration", page_icon="⚙️", layout="wide")
 render_sidebar_info()
@@ -20,9 +20,9 @@ with st.form("config_form"):
     max_steps = 3 if demo_mode else 10
     max_reps = 1 if demo_mode else 3
     
-    routers = st.number_input("Number of Routers", min_value=5, max_value=max_routers, value=8, step=1)
-    steps = st.number_input("Time Steps to Simulate (Out-of-sample)", min_value=1, max_value=max_steps, value=2, step=1)
-    qaoa_reps = st.number_input("QAOA Repetitions (Depth)", min_value=1, max_value=max_reps, value=1, step=1)
+    routers = st.number_input("Number of Routers", min_value=5, max_value=max_routers, value=min(8, max_routers), step=1, key=f"routers_{demo_mode}")
+    steps = st.number_input("Time Steps to Simulate (Out-of-sample)", min_value=1, max_value=max_steps, value=min(2, max_steps), step=1, key=f"steps_{demo_mode}")
+    qaoa_reps = st.number_input("QAOA Repetitions (Depth)", min_value=1, max_value=max_reps, value=1, step=1, key=f"reps_{demo_mode}")
     
     if not demo_mode:
         st.warning("⚠️ Research Mode Enabled: High number of routers (>12) using Exact Statevector simulation may crash Streamlit Community Cloud due to memory limits (1GB).")

@@ -5,7 +5,7 @@ import sys
 import os
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-from utils import load_traffic, load_ml_metrics, render_sidebar_info
+from quantum_routing.dashboard.utils import load_traffic, load_ml_metrics, render_sidebar_info
 
 st.set_page_config(page_title="Traffic Prediction", page_icon="📈", layout="wide")
 render_sidebar_info()

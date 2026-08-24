@@ -1,5 +1,5 @@
 import streamlit as st
-from utils import render_sidebar_info
+from quantum_routing.dashboard.utils import render_sidebar_info
 
 st.set_page_config(
     page_title="Quantum Network Routing",

@@ -79,7 +79,7 @@ class QuantumRouter(ClassicalRouter):
         Solve the QUBO using QAOA.
         """
         sampler = StatevectorSampler()
-        optimizer = COBYLA(maxiter=100)
+        optimizer = COBYLA(maxiter=15)
         qaoa = QAOA(sampler=sampler, optimizer=optimizer, reps=reps)
         meo = MinimumEigenOptimizer(qaoa)
         
