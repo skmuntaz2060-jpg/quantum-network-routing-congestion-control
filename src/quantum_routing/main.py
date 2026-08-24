@@ -10,7 +10,7 @@ from typing import Dict, Any
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from quantum_routing.simulation.network import NetworkSimulator
+from quantum_routing.simulation.network import NetworkSimulator, save_dataset
 from quantum_routing.ml.predictor import TrafficPredictor
 from quantum_routing.routing.classical import ClassicalRouter
 from quantum_routing.routing.quantum import QuantumRouter
@@ -60,14 +60,15 @@ def run_experiment(num_routers=10, steps_to_simulate=3, qaoa_reps=1):
     print("--- 1. Initialization & Simulation ---")
     print("Generating topology and traffic...")
     simulator = NetworkSimulator(num_nodes=num_routers, seed=42)
-    topology_path = os.path.join(PROJECT_ROOT, 'data', 'topology.json')
-    traffic_path = os.path.join(PROJECT_ROOT, 'data', 'traffic.csv')
-    G_base = simulator.generate_topology(save_path=topology_path)
+    G_base = simulator.generate_topology()
     
     # We must train the ML model on a sufficient history, and THEN simulate routing on future (out-of-sample) steps.
     train_steps = 20
     total_steps = train_steps + steps_to_simulate
-    traffic_df = simulator.generate_traffic(time_steps=total_steps, base_demand=10.0, save_path=traffic_path)
+    traffic_df = simulator.generate_traffic(time_steps=total_steps, num_pairs=5)
+    
+    # Save the dataset
+    save_dataset(G_base, traffic_df, os.path.join(PROJECT_ROOT, 'data'))
     
     # Split the dataset for strict evaluation
     train_traffic_df = traffic_df[traffic_df['time_step'] < train_steps].copy()

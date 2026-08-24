@@ -4,7 +4,8 @@ numpy
 scikit-learn
 qiskit
 qiskit-optimization
-streamlit
+qiskit-algorithms
+streamlit>=1.36.0
 plotly
 xgboost
 joblib

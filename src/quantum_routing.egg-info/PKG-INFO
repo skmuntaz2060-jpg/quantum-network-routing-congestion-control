@@ -11,7 +11,8 @@ Requires-Dist: numpy
 Requires-Dist: scikit-learn
 Requires-Dist: qiskit
 Requires-Dist: qiskit-optimization
-Requires-Dist: streamlit
+Requires-Dist: qiskit-algorithms
+Requires-Dist: streamlit>=1.36.0
 Requires-Dist: plotly
 Requires-Dist: xgboost
 Requires-Dist: joblib
@@ -33,27 +34,37 @@ The system pipeline consists of:
 5. **Benchmarking & Metrics**: Calculating and comparing throughput, delay, and congestion metrics dynamically from simulation results.
 6. **Dashboard**: An interactive Streamlit dashboard to visualize results, topologies, and benchmarks with Plotly.
 
-## Installation
+## 🚀 Deployment Instructions (Linux Ready)
 
+To deploy the full suite (Backend + Streamlit Dashboard) on a clean Linux environment, follow these steps:
+
+### 1. Prerequisites
+Ensure you have `python3.9` or higher installed on your system.
+
+### 2. Set up a Virtual Environment
 ```bash
-pip install -e .
-# or
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### 3. Install Dependencies
+```bash
 pip install -r requirements.txt
 ```
 
-## Running the Project
-
-To launch the dashboard:
+### 4. Run the Backend Simulator
+Before launching the dashboard, ensure you have generated a baseline set of results:
 ```bash
-streamlit run src/quantum_routing/app/dashboard.py
+python src/quantum_routing/main.py --routers 8 --steps 5
 ```
 
-To run the main orchestration script:
+### 5. Launch the Streamlit Dashboard
 ```bash
-python src/quantum_routing/main.py
+python -m streamlit run src/quantum_routing/dashboard/app.py
 ```
+The dashboard will be available at `http://localhost:8501`. Ensure port 8501 is exposed if you are deploying to a remote server.
 
-To run the tests:
+### 6. Run Tests
 ```bash
 pytest tests/
 ```
