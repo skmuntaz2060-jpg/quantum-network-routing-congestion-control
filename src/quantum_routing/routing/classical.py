@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from typing import List, Dict, Any, Tuple
 import os
+from itertools import islice
 
 class ClassicalRouter:
     """
@@ -41,14 +42,20 @@ class ClassicalRouter:
         utilization = edge_data.get('utilization', 0.0)
         packet_loss = edge_data.get('packet_loss', 0.0)
         
+        if utilization > 1.0:
+            packet_loss = min(1.0, packet_loss + (utilization - 1.0) * 0.5)
+            
         # If utilization is very high, apply congestion penalty
         is_congested = 1.0 if utilization > 0.8 else 0.0
+        
+        ai_penalty = edge_data.get('routing_cost_ai_penalty', 0.0)
         
         cost = (
             self.weights['latency'] * latency +
             self.weights['utilization'] * utilization +
             self.weights['packet_loss'] * packet_loss +
-            self.weights['congestion_penalty'] * is_congested
+            self.weights['congestion_penalty'] * is_congested +
+            ai_penalty
         )
         return max(cost, 1e-6) # Ensure non-zero positive cost
 
@@ -78,12 +85,17 @@ class ClassicalRouter:
             # For simplicity in metrics, we can just sum them or do probabilistic sum.
             # We'll use sum for simplicity as a metric, or proper probability:
             loss = data.get('packet_loss', 0.0)
+            
+            utilization = data.get('utilization', 0.0)
+            if utilization > 1.0:
+                loss = min(1.0, loss + (utilization - 1.0) * 0.5)
+                
             total_loss = 1.0 - ((1.0 - total_loss) * (1.0 - loss))
             
         return {
             'total_latency': total_latency,
             'max_utilization': max_util,
-            'total_packet_loss': total_loss
+            'packet_loss_rate': total_loss
         }
 
     def route_request(self, source: int, target: int, demand: float = 0.0, k_candidates: int = 3) -> Tuple[List[int], float, Dict[str, float]]:
@@ -106,9 +118,8 @@ class ClassicalRouter:
         self._update_edge_costs()
         
         try:
-            # Use k-shortest paths based on the routing_cost
-            candidate_paths = list(nx.shortest_simple_paths(self.graph, source, target, weight='routing_cost'))
-            candidate_paths = candidate_paths[:k_candidates]
+            # Use k-shortest paths based on the routing_cost (lazily evaluated)
+            candidate_paths = list(islice(nx.shortest_simple_paths(self.graph, source, target, weight='routing_cost'), k_candidates))
         except nx.NetworkXNoPath:
             return [], float('inf'), {}
 
@@ -137,9 +148,9 @@ class ClassicalRouter:
             capacity = self.graph[u][v].get('capacity', 100.0)
             current_util = self.graph[u][v].get('utilization', 0.0)
             
-            # utilization is a fraction (0.0 to 1.0)
+            # utilization is a fraction (0.0 = no load, >1.0 = overloaded)
             added_util = demand / capacity
-            self.graph[u][v]['utilization'] = min(1.0, current_util + added_util)
+            self.graph[u][v]['utilization'] = current_util + added_util
 
     def route_batch(self, requests: List[Dict[str, Any]]) -> pd.DataFrame:
         """

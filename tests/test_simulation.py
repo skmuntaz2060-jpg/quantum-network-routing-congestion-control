@@ -21,7 +21,7 @@ def test_generate_topology():
     # Check if edge attributes exist and are in valid ranges
     for u, v, data in graph.edges(data=True):
         assert 'capacity' in data
-        assert 100 <= data['capacity'] <= 1000
+        assert 50 <= data['capacity'] <= 200
         assert 'latency' in data
         assert 1 <= data['latency'] <= 50
         assert 'packet_loss' in data

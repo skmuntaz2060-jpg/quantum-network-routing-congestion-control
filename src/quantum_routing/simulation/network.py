@@ -32,12 +32,12 @@ class NetworkSimulator:
         """
         # Barabasi-Albert for a realistic hub-and-spoke-like topology
         # m is the number of edges to attach from a new node to existing nodes
-        m = max(2, self.num_nodes // 5)
+        m = max(3, self.num_nodes // 4)
         self.graph = nx.barabasi_albert_graph(self.num_nodes, m, seed=self.seed)
         
         # Add realistic properties to each link
         for u, v in self.graph.edges():
-            self.graph[u][v]['capacity'] = float(self.rng.uniform(100, 1000)) # Mbps or Gbps
+            self.graph[u][v]['capacity'] = float(self.rng.uniform(50, 200)) # Mbps or Gbps
             self.graph[u][v]['latency'] = float(self.rng.uniform(1, 50)) # ms
             self.graph[u][v]['packet_loss'] = float(self.rng.uniform(0.0001, 0.01)) # probability
             self.graph[u][v]['utilization'] = 0.0 # initially 0

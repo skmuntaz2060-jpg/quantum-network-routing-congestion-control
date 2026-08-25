@@ -47,7 +47,7 @@ with col1:
     
     st.write("### Path Metrics")
     st.write(f"- Latency: {row['total_latency']:.2f} ms")
-    st.write(f"- Packet Loss: {row['total_packet_loss']:.4%}")
+    st.write(f"- Packet Loss Rate: {row['packet_loss_rate']:.4%}")
     st.write(f"- Max Utilization: {row['max_utilization']:.2%}")
 
 with col2:

@@ -32,7 +32,8 @@ with col1:
     st.plotly_chart(fig1, width="stretch")
     
     st.subheader("Total Packet Loss")
-    fig3 = px.bar(df_summary, x='Strategy', y='total_packet_loss', color='Strategy', text_auto='.4f')
+    fig3 = px.bar(df_summary, x='Strategy', y='packet_loss_rate', color='Strategy', text_auto='.4f')
+    fig3.update_layout(title="Packet Loss Rate (Lower is Better)")
     st.plotly_chart(fig3, width="stretch")
 
 with col2:
@@ -48,7 +49,7 @@ st.divider()
 
 st.subheader("Radar Chart Comparison")
 # Normalize metrics for radar chart
-metrics = ['avg_latency', 'total_packet_loss', 'avg_utilization', 'load_imbalance']
+metrics = ['avg_latency', 'packet_loss_rate', 'average_utilization', 'load_imbalance']
 
 fig_radar = go.Figure()
 

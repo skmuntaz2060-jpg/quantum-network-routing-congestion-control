@@ -17,11 +17,11 @@ with st.form("config_form"):
     demo_mode = st.checkbox("Demo Mode (Fast & Safe for Streamlit Cloud)", value=True, help="Limits graph size and depth to prevent Out-Of-Memory errors.")
     
     max_routers = 10 if demo_mode else 30
-    max_steps = 3 if demo_mode else 10
+    max_steps = 3 if demo_mode else 100
     max_reps = 1 if demo_mode else 3
     
-    routers = st.number_input("Number of Routers", min_value=5, max_value=max_routers, value=min(8, max_routers), step=1, key=f"routers_{demo_mode}")
-    steps = st.number_input("Time Steps to Simulate (Out-of-sample)", min_value=1, max_value=max_steps, value=min(2, max_steps), step=1, key=f"steps_{demo_mode}")
+    routers = st.number_input("Number of Routers", min_value=5, max_value=max_routers, value=8 if demo_mode else 20, step=1, key=f"routers_{demo_mode}")
+    steps = st.number_input("Time Steps to Simulate (Out-of-sample)", min_value=1, max_value=max_steps, value=2 if demo_mode else 50, step=1, key=f"steps_{demo_mode}")
     qaoa_reps = st.number_input("QAOA Repetitions (Depth)", min_value=1, max_value=max_reps, value=1, step=1, key=f"reps_{demo_mode}")
     
     if not demo_mode:

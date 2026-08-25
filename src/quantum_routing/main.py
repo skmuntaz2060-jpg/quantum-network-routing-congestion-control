@@ -21,19 +21,27 @@ def calculate_network_metrics(df_results: pd.DataFrame, G: nx.Graph, route_times
     failed = df_results[df_results['selected_path'] == '[]']
     success = df_results[df_results['selected_path'] != '[]']
     
-    packet_loss_total = success['total_packet_loss'].sum() if not success.empty else 0.0
     throughput = success['demand'].sum() if not success.empty else 0.0
+    
+    if throughput > 0:
+        packet_loss_rate = (success['packet_loss_rate'] * success['demand']).sum() / throughput
+    else:
+        packet_loss_rate = 0.0
     
     avg_latency = success['total_latency'].mean() if not success.empty else float('inf')
     p95_latency = success['total_latency'].quantile(0.95) if not success.empty else float('inf')
     
-    # Calculate link stats
-    utilizations = [data.get('utilization', 0.0) for u, v, data in G.edges(data=True)]
-    avg_utilization = np.mean(utilizations)
-    load_imbalance = np.var(utilizations)
-    
-    # Congestion rate (links > 0.8)
-    congestion_rate = sum(1 for u in utilizations if u > 0.8) / len(utilizations) if utilizations else 0.0
+    num_success = len(success)
+    if num_success > 0:
+        congestion_rate = len(success[success['max_utilization'] > 0.8]) / num_success
+        average_utilization = success['max_utilization'].mean()
+        peak_utilization = success['max_utilization'].max()
+        load_imbalance = success['max_utilization'].std() if num_success > 1 else 0.0
+    else:
+        congestion_rate = 0.0
+        average_utilization = 0.0
+        peak_utilization = 0.0
+        load_imbalance = 0.0
     
     avg_route_time = np.mean(route_times) if route_times else 0.0
     avg_qaoa_time = np.mean(qaoa_times) if qaoa_times else 0.0
@@ -44,14 +52,15 @@ def calculate_network_metrics(df_results: pd.DataFrame, G: nx.Graph, route_times
         'total_requests': len(df_results),
         'failed_requests': len(failed),
         'throughput': throughput,
-        'total_packet_loss': packet_loss_total,
+        'packet_loss_rate': packet_loss_rate,
         'avg_latency': avg_latency,
         'p95_latency': p95_latency,
-        'avg_utilization': avg_utilization,
+        'average_utilization': average_utilization,
+        'peak_utilization': peak_utilization,
         'congestion_rate': congestion_rate,
         'load_imbalance': load_imbalance,
         'avg_route_time_sec': avg_route_time,
-        'avg_qaoa_time_sec': avg_qaoa_time,
+        'qaoa_runtime_sec': avg_qaoa_time,
         'avg_objective_val': avg_obj
     }
 
@@ -62,9 +71,9 @@ def run_experiment(num_routers=10, steps_to_simulate=3, qaoa_reps=1):
     G_base = simulator.generate_topology()
     
     # We must train the ML model on a sufficient history, and THEN simulate routing on future (out-of-sample) steps.
-    train_steps = 20
+    train_steps = 100
     total_steps = train_steps + steps_to_simulate
-    traffic_df = simulator.generate_traffic(time_steps=total_steps, num_pairs=5)
+    traffic_df = simulator.generate_traffic(time_steps=total_steps, num_pairs=num_routers)
     
     # Save the dataset
     save_dataset(G_base, traffic_df, str(DATA_DIR))
@@ -177,7 +186,7 @@ def run_experiment(num_routers=10, steps_to_simulate=3, qaoa_reps=1):
                     'selected_path': str(path),
                     'route_cost': cost,
                     'total_latency': metric.get('total_latency', float('inf')),
-                    'total_packet_loss': metric.get('total_packet_loss', float('inf')),
+                    'packet_loss_rate': metric.get('packet_loss_rate', float('inf')),
                     'max_utilization': metric.get('max_utilization', 0.0),
                     'qubo_fval': fval
                 }
@@ -212,7 +221,7 @@ def run_experiment(num_routers=10, steps_to_simulate=3, qaoa_reps=1):
     print("| Metric | Shortest-Path (A) | Congestion-Aware (B) | AI + QAOA (C) |")
     print("|---|---|---|---|")
     
-    metrics_to_print = ['avg_latency', 'p95_latency', 'throughput', 'total_packet_loss', 'congestion_rate', 'load_imbalance', 'avg_route_time_sec']
+    metrics_to_print = ['avg_latency', 'p95_latency', 'throughput', 'packet_loss_rate', 'congestion_rate', 'average_utilization', 'peak_utilization', 'load_imbalance', 'avg_route_time_sec', 'qaoa_runtime_sec']
     
     for m in metrics_to_print:
         val_A = metrics_summary['Shortest-path baseline'][m]

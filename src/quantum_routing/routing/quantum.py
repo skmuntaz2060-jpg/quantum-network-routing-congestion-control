@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import os
 from typing import List, Dict, Any, Tuple
+from itertools import islice
 
 from qiskit_optimization import QuadraticProgram
 from qiskit_optimization.algorithms import MinimumEigenOptimizer
@@ -125,8 +126,7 @@ class QuantumRouter(ClassicalRouter):
         
         try:
             # Generate K shortest simple paths based on edge costs
-            candidate_paths = list(nx.shortest_simple_paths(self.graph, source, target, weight='routing_cost'))
-            candidate_paths = candidate_paths[:k_candidates]
+            candidate_paths = list(islice(nx.shortest_simple_paths(self.graph, source, target, weight='routing_cost'), k_candidates))
         except nx.NetworkXNoPath:
             return [], float('inf'), {}, {}
 
@@ -193,7 +193,7 @@ class QuantumRouter(ClassicalRouter):
                 'route_cost': cost,
                 'total_latency': metrics.get('total_latency', float('inf')),
                 'max_utilization': metrics.get('max_utilization', float('inf')),
-                'total_packet_loss': metrics.get('total_packet_loss', float('inf')),
+                'packet_loss_rate': metrics.get('packet_loss_rate', float('inf')),
                 'solver': meta.get('solver', ''),
                 'runtime_sec': meta.get('runtime_sec', 0.0),
                 'qubo_fval': meta.get('fval', 0.0),
