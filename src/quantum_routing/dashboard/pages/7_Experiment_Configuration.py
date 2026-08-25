@@ -48,6 +48,10 @@ if submitted:
                 capture_output=True, text=True, check=True, env=env
             )
             st.success("Experiment completed successfully!")
+            
+            # Clear Streamlit caches so dashboard pages load the newly generated artifacts
+            st.cache_data.clear()
+            
             with st.expander("View Logs"):
                 st.code(result.stdout)
                 

@@ -8,8 +8,7 @@ import pandas as pd
 import networkx as nx
 from typing import Dict, Any
 
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
+from quantum_routing.config import PROJECT_ROOT, DATA_DIR, RESULTS_DIR
 from quantum_routing.simulation.network import NetworkSimulator, save_dataset
 from quantum_routing.ml.predictor import TrafficPredictor
 from quantum_routing.routing.classical import ClassicalRouter
@@ -68,7 +67,7 @@ def run_experiment(num_routers=10, steps_to_simulate=3, qaoa_reps=1):
     traffic_df = simulator.generate_traffic(time_steps=total_steps, num_pairs=5)
     
     # Save the dataset
-    save_dataset(G_base, traffic_df, os.path.join(PROJECT_ROOT, 'data'))
+    save_dataset(G_base, traffic_df, str(DATA_DIR))
     
     # Split the dataset for strict evaluation
     train_traffic_df = traffic_df[traffic_df['time_step'] < train_steps].copy()
@@ -77,7 +76,7 @@ def run_experiment(num_routers=10, steps_to_simulate=3, qaoa_reps=1):
     predictor = TrafficPredictor()
     print(f"Training TrafficPredictor on first {train_steps} steps...")
     try:
-        predictor.train_and_evaluate(train_traffic_df, output_dir=os.path.join(PROJECT_ROOT, "results"))
+        predictor.train_and_evaluate(train_traffic_df, output_dir=str(RESULTS_DIR))
         print(f"ML Model Trained. RF RMSE: {predictor.metrics['regression']['RandomForest']['RMSE']:.4f}")
     except Exception as e:
         print(f"Failed to train ML model: {e}. Skipping AI integration.")
@@ -199,15 +198,13 @@ def run_experiment(num_routers=10, steps_to_simulate=3, qaoa_reps=1):
         print(f"  Congestion Rate: {agg_metrics['congestion_rate']:.2%}")
         
     print("\n--- 4. Saving Results ---")
-    results_dir = os.path.join(PROJECT_ROOT, 'results')
-    os.makedirs(results_dir, exist_ok=True)
     
     # Save raw
     for k, df in results.items():
-        df.to_csv(os.path.join(results_dir, f'scenario_{k}_raw.csv'), index=False)
+        df.to_csv(RESULTS_DIR / f'scenario_{k}_raw.csv', index=False)
         
     # Save summary
-    with open(os.path.join(results_dir, 'metrics_summary.json'), 'w') as f:
+    with open(RESULTS_DIR / 'metrics_summary.json', 'w') as f:
         json.dump(metrics_summary, f, indent=4)
         
     # Print Markdown Table

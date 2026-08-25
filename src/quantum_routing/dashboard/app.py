@@ -1,5 +1,8 @@
 import streamlit as st
-from quantum_routing.dashboard.utils import render_sidebar_info
+from quantum_routing.dashboard.utils import render_sidebar_info, ensure_demo_artifacts
+
+# Ensure demo artifacts are present on app startup
+ensure_demo_artifacts()
 
 st.set_page_config(
     page_title="Quantum Network Routing",

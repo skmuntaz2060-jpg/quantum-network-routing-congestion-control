@@ -4,13 +4,38 @@ import pandas as pd
 import networkx as nx
 import streamlit as st
 
-DATA_DIR = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'data')
-RESULTS_DIR = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'results')
+from quantum_routing.config import DATA_DIR, RESULTS_DIR
+
+@st.cache_resource
+def ensure_demo_artifacts():
+    """
+    On application startup, ensure that a lightweight Demo Mode artifact set exists.
+    If they do not exist, generate them automatically.
+    """
+    topology_file = DATA_DIR / 'topology.json'
+    
+    if topology_file.exists():
+        return
+        
+    print("Demo artifacts not found. Generating lightweight demo artifacts...")
+    # Import locally to avoid circular imports and load times if not needed
+    from quantum_routing.main import run_experiment
+    
+    try:
+        # Run the fast, safe demo configuration
+        run_experiment(num_routers=8, steps_to_simulate=2, qaoa_reps=1)
+        print("Demo initialization complete.")
+        # Clear data cache so subsequent data loads pick up new files
+        st.cache_data.clear()
+    except Exception as e:
+        print(f"Failed to generate demo artifacts: {e}")
+        raise e
 
 @st.cache_data
 def load_topology():
-    topology_file = os.path.join(DATA_DIR, 'topology.json')
-    if not os.path.exists(topology_file):
+    ensure_demo_artifacts()
+    topology_file = DATA_DIR / 'topology.json'
+    if not topology_file.exists():
         return None
     with open(topology_file, 'r') as f:
         data = json.load(f)
@@ -18,15 +43,17 @@ def load_topology():
 
 @st.cache_data
 def load_traffic():
-    traffic_file = os.path.join(DATA_DIR, 'traffic.csv')
-    if not os.path.exists(traffic_file):
+    ensure_demo_artifacts()
+    traffic_file = DATA_DIR / 'traffic.csv'
+    if not traffic_file.exists():
         return None
     return pd.read_csv(traffic_file)
 
 @st.cache_data
 def load_routing_scenario(scenario_key):
-    file_path = os.path.join(RESULTS_DIR, f'scenario_{scenario_key}_raw.csv')
-    if not os.path.exists(file_path):
+    ensure_demo_artifacts()
+    file_path = RESULTS_DIR / f'scenario_{scenario_key}_raw.csv'
+    if not file_path.exists():
         return None
     
     # Safely load the CSV and parse lists if any
@@ -46,16 +73,18 @@ def load_routing_scenario(scenario_key):
 
 @st.cache_data
 def load_metrics_summary():
-    file_path = os.path.join(RESULTS_DIR, 'metrics_summary.json')
-    if not os.path.exists(file_path):
+    ensure_demo_artifacts()
+    file_path = RESULTS_DIR / 'metrics_summary.json'
+    if not file_path.exists():
         return None
     with open(file_path, 'r') as f:
         return json.load(f)
 
 @st.cache_data
 def load_ml_metrics():
-    file_path = os.path.join(RESULTS_DIR, 'ml_metrics.json')
-    if not os.path.exists(file_path):
+    ensure_demo_artifacts()
+    file_path = RESULTS_DIR / 'ml_metrics.json'
+    if not file_path.exists():
         return None
     with open(file_path, 'r') as f:
         return json.load(f)
