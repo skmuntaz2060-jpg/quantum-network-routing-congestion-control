@@ -91,7 +91,7 @@ fig = go.Figure(data=[edge_trace, node_trace],
                 yaxis=dict(showgrid=False, zeroline=False, showticklabels=False))
                 )
 
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width="stretch")
 
 st.subheader("Link Specifications")
 st.write(f"Total Routers (Nodes): {G.number_of_nodes()}")
@@ -109,4 +109,4 @@ for u, v, data in G.edges(data=True):
     })
 
 import pandas as pd
-st.dataframe(pd.DataFrame(edge_data), use_container_width=True)
+st.dataframe(pd.DataFrame(edge_data), width="stretch")

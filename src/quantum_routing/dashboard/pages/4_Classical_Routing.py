@@ -80,7 +80,7 @@ with col1:
     st.write(f"**Latency**: {row_A['total_latency']:.2f} ms")
     st.write(f"**Max Utilization**: {row_A['max_utilization']:.2%}")
     figA = plot_route(G, row_A['selected_path'], "Shortest Path Route")
-    st.plotly_chart(figA, use_container_width=True)
+    st.plotly_chart(figA, width="stretch")
 
 with col2:
     st.subheader("Scenario B (Congestion-Aware)")
@@ -88,4 +88,4 @@ with col2:
     st.write(f"**Latency**: {row_B['total_latency']:.2f} ms")
     st.write(f"**Max Utilization**: {row_B['max_utilization']:.2%}")
     figB = plot_route(G, row_B['selected_path'], "Congestion-Aware Route")
-    st.plotly_chart(figB, use_container_width=True)
+    st.plotly_chart(figB, width="stretch")

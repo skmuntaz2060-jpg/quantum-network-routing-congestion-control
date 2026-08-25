@@ -29,20 +29,20 @@ col1, col2 = st.columns(2)
 with col1:
     st.subheader("Average Latency (ms)")
     fig1 = px.bar(df_summary, x='Strategy', y='avg_latency', color='Strategy', text_auto='.2f')
-    st.plotly_chart(fig1, use_container_width=True)
+    st.plotly_chart(fig1, width="stretch")
     
     st.subheader("Total Packet Loss")
     fig3 = px.bar(df_summary, x='Strategy', y='total_packet_loss', color='Strategy', text_auto='.4f')
-    st.plotly_chart(fig3, use_container_width=True)
+    st.plotly_chart(fig3, width="stretch")
 
 with col2:
     st.subheader("Throughput")
     fig2 = px.bar(df_summary, x='Strategy', y='throughput', color='Strategy', text_auto='.1f')
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig2, width="stretch")
     
     st.subheader("Routing Computation Time (s)")
     fig4 = px.bar(df_summary, x='Strategy', y='avg_route_time_sec', color='Strategy', text_auto='.4f')
-    st.plotly_chart(fig4, use_container_width=True)
+    st.plotly_chart(fig4, width="stretch")
 
 st.divider()
 
@@ -71,7 +71,7 @@ fig_radar.update_layout(
     showlegend=True
 )
 
-st.plotly_chart(fig_radar, use_container_width=True)
+st.plotly_chart(fig_radar, width="stretch")
 
 st.subheader("Raw Summary Data")
 st.dataframe(df_summary)

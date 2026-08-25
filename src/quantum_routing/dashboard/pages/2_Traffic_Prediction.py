@@ -61,4 +61,4 @@ if not congestion_events.empty:
     fig.add_scatter(x=congestion_events['time_step'], y=congestion_events['demand'], mode='markers', 
                     marker=dict(color='red', size=10, symbol='x'), name='Congestion Event')
 
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width="stretch")

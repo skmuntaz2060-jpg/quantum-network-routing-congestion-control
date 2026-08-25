@@ -36,7 +36,7 @@ fig = px.line(df_raw, x='step', y='max_utilization', title=f"Max Utilization of 
 # Add a threshold line
 fig.add_hline(y=0.8, line_dash="dash", line_color="red", annotation_text="Congestion Threshold (0.8)")
 fig.update_layout(yaxis_range=[0, 1.05])
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width="stretch")
 
 st.subheader("Raw Request Log")
-st.dataframe(df_raw, use_container_width=True)
+st.dataframe(df_raw, width="stretch")

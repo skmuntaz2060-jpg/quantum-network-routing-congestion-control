@@ -76,10 +76,10 @@ with col2:
         return fig
 
     fig = plot_route(G, row['selected_path'], "QAOA Selected Path")
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 st.divider()
 st.subheader("QUBO Objective Value History")
 fig2 = go.Figure(data=go.Scatter(x=df_C.index, y=df_C['qubo_fval'], mode='lines+markers', name='FVAL'))
 fig2.update_layout(title="Objective Value per Request", xaxis_title="Request Index", yaxis_title="QUBO FVal")
-st.plotly_chart(fig2, use_container_width=True)
+st.plotly_chart(fig2, width="stretch")
