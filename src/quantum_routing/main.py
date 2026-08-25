@@ -64,10 +64,10 @@ def calculate_network_metrics(df_results: pd.DataFrame, G: nx.Graph, route_times
         'avg_objective_val': avg_obj
     }
 
-def run_experiment(num_routers=10, steps_to_simulate=3, qaoa_reps=1):
+def run_experiment(num_routers=10, steps_to_simulate=3, qaoa_reps=1, seed=42):
     print("--- 1. Initialization & Simulation ---")
     print("Generating topology and traffic...")
-    simulator = NetworkSimulator(num_nodes=num_routers, seed=42)
+    simulator = NetworkSimulator(num_nodes=num_routers, seed=seed)
     G_base = simulator.generate_topology()
     
     # We must train the ML model on a sufficient history, and THEN simulate routing on future (out-of-sample) steps.
@@ -117,7 +117,7 @@ def run_experiment(num_routers=10, steps_to_simulate=3, qaoa_reps=1):
         elif scenario_key == 'C':
             weights = {'latency': 1.0, 'utilization': 50.0, 'packet_loss': 100.0, 'congestion_penalty': 500.0}
             # AI predictions will dynamically update costs. QAOA will route.
-            router = QuantumRouter(G_scenario, weights, penalty_lambda=1000.0)
+            router = QuantumRouter(G_scenario, weights, penalty_lambda=1000.0, seed=seed)
             
         route_times = []
         qaoa_times = []
@@ -238,6 +238,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run End-to-End Routing Benchmark")
     parser.add_argument("--steps", type=int, default=2, help="Number of time steps to simulate")
     parser.add_argument("--routers", type=int, default=10, help="Number of routers in topology")
+    parser.add_argument("--seed", type=int, default=42, help="Random seed for reproducibility")
     
     args = parser.parse_args()
-    run_experiment(num_routers=args.routers, steps_to_simulate=args.steps)
+    run_experiment(num_routers=args.routers, steps_to_simulate=args.steps, seed=args.seed)

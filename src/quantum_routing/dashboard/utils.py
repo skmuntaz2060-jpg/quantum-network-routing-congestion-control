@@ -23,7 +23,7 @@ def ensure_demo_artifacts():
     
     try:
         # Run the fast, safe demo configuration
-        run_experiment(num_routers=8, steps_to_simulate=2, qaoa_reps=1)
+        run_experiment(num_routers=8, steps_to_simulate=2, qaoa_reps=1, seed=42)
         print("Demo initialization complete.")
         # Clear data cache so subsequent data loads pick up new files
         st.cache_data.clear()
@@ -90,6 +90,9 @@ def load_ml_metrics():
         return json.load(f)
 
 def render_sidebar_info():
+    from quantum_routing import __version__
+    
     st.sidebar.markdown("### Quantum Routing Simulator")
+    st.sidebar.markdown(f"**Version:** {__version__}")
     st.sidebar.markdown("An end-to-end simulation pipeline combining Classical algorithms, Machine Learning predictions, and Quantum QAOA optimization.")
     st.sidebar.info("Navigate through the pages above to explore the different modules.")

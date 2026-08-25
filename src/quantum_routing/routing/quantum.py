@@ -20,7 +20,7 @@ class QuantumRouter(ClassicalRouter):
     Inherits from ClassicalRouter to reuse edge cost and path generation logic.
     """
 
-    def __init__(self, network_graph: nx.Graph, weights: Dict[str, float] = None, penalty_lambda: float = 1000.0):
+    def __init__(self, network_graph: nx.Graph, weights: Dict[str, float] = None, penalty_lambda: float = 1000.0, seed: int = 42):
         """
         Initialize the quantum router.
         
@@ -31,6 +31,7 @@ class QuantumRouter(ClassicalRouter):
         """
         super().__init__(network_graph, weights)
         self.penalty_lambda = penalty_lambda
+        self.seed = seed
 
     def _formulate_qubo(self, candidate_paths: List[List[int]]) -> QuadraticProgram:
         """
@@ -79,7 +80,7 @@ class QuantumRouter(ClassicalRouter):
         """
         Solve the QUBO using QAOA.
         """
-        sampler = StatevectorSampler()
+        sampler = StatevectorSampler(seed=self.seed)
         optimizer = COBYLA(maxiter=15)
         qaoa = QAOA(sampler=sampler, optimizer=optimizer, reps=reps)
         meo = MinimumEigenOptimizer(qaoa)

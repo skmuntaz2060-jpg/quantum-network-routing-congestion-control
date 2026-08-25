@@ -23,6 +23,10 @@ with st.form("config_form"):
     routers = st.number_input("Number of Routers", min_value=5, max_value=max_routers, value=8 if demo_mode else 20, step=1, key=f"routers_{demo_mode}")
     steps = st.number_input("Time Steps to Simulate (Out-of-sample)", min_value=1, max_value=max_steps, value=2 if demo_mode else 50, step=1, key=f"steps_{demo_mode}")
     qaoa_reps = st.number_input("QAOA Repetitions (Depth)", min_value=1, max_value=max_reps, value=1, step=1, key=f"reps_{demo_mode}")
+    seed = st.number_input("Random Seed (for Deterministic Simulation)", value=42, step=1, key=f"seed_{demo_mode}")
+    
+    if demo_mode:
+        st.info(f"**Demo Mode Configuration:** Routers={routers}, Steps={steps}, QAOA Reps={qaoa_reps}, Seed={seed}")
     
     if not demo_mode:
         st.warning("⚠️ Research Mode Enabled: High number of routers (>12) using Exact Statevector simulation may crash Streamlit Community Cloud due to memory limits (1GB).")
@@ -44,7 +48,7 @@ if submitted:
             
             # We capture output to show in UI
             result = subprocess.run(
-                [sys.executable, main_script, "--routers", str(routers), "--steps", str(steps)],
+                [sys.executable, main_script, "--routers", str(routers), "--steps", str(steps), "--seed", str(seed)],
                 capture_output=True, text=True, check=True, env=env
             )
             st.success("Experiment completed successfully!")
